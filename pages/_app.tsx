@@ -1,4 +1,3 @@
-import { ChakraProvider } from "@chakra-ui/react";
 import Head from "next/head";
 
 import GlobalStyles from "components/GlobalStyles";
@@ -50,9 +49,7 @@ export default function App({ pageProps, Component }) {
           }}
         />
       </Head>
-      <ChakraProvider>
-        <Component {...pageProps} />
-      </ChakraProvider>
+      <Component {...pageProps} />
       <GlobalStyles />
     </>
   );
