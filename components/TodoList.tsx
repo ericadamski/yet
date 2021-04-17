@@ -31,11 +31,14 @@ export default function TodoList() {
       notCompletedTodos
         .reduce((groups, todo) => {
           const category = categoriesById.get(todo.category_id);
-          if (!groups.has(category.title)) {
-            groups.set(category.title, []);
-          }
 
-          groups.get(category.title).push(todo);
+          if (category) {
+            if (!groups.has(category.title)) {
+              groups.set(category.title, []);
+            }
+
+            groups.get(category.title).push(todo);
+          }
 
           return groups;
         }, new Map<string, TodoType[]>())

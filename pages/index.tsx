@@ -97,7 +97,7 @@ export default function Home() {
     <>
       <div className="page">
         {addingTodo ? (
-          <div className="page__add-todos" onClick={() => setAddingTodo(false)}>
+          <div className="page__add-todos">
             <TodoAddInput onAddTodo={() => setAddingTodo(false)} />
           </div>
         ) : null}
