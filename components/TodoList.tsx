@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 
 import Todo from "./Todo";
-import useTodos from "hooks/useTodos";
 import { Todo as TodoType } from "types/todo";
+import useTodos from "hooks/useTodos";
 import useCategories from "hooks/useCategories";
 import { Category } from "types/categories";
 
@@ -79,16 +79,18 @@ export default function TodoList() {
             </div>
           );
         })}
-        <div className="todo-list__group">
-          <div className="todo-list__group-container">
-            <p className="todo-list__group-title">Things you've done</p>
+        {completedTodos?.length > 0 && (
+          <div className="todo-list__group">
+            <div className="todo-list__group-container">
+              <p className="todo-list__group-title">Things you've done</p>
+            </div>
+            <div className="todo-list__nest">
+              {completedTodos.map((todo) => {
+                return <Todo key={todo.id} todo={todo} />;
+              })}
+            </div>
           </div>
-          <div className="todo-list__nest">
-            {completedTodos.map((todo) => {
-              return <Todo key={todo.id} todo={todo} />;
-            })}
-          </div>
-        </div>
+        )}
       </div>
       <style jsx>{`
         .todo-list {

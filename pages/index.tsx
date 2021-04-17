@@ -5,11 +5,12 @@ import TodoList from "components/TodoList";
 import useUser from "hooks/useUser";
 import Button from "components/Button";
 import * as User from "lib/user";
+import Header from "components/Header";
 
 export default function Home() {
-  const [user] = useUser();
+  const [user, loading] = useUser();
   const [addingTodo, setAddingTodo] = useState<boolean>(false);
-  const isLoggedIn = user != null;
+  const isLoggedIn = !loading && user != null;
 
   useEffect(() => {
     const handleNewTodo = (event: KeyboardEvent) => {
@@ -95,6 +96,7 @@ export default function Home() {
 
   return (
     <>
+      <Header />
       <div className="page">
         {addingTodo ? (
           <div className="page__add-todos">

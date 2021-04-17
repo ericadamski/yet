@@ -15,6 +15,9 @@ export default function useUser(): [User, boolean, () => void] {
       if (event === "SIGNED_OUT") {
         setUser(undefined);
       }
+      if (event === "SIGNED_IN") {
+        setUser(UserModel.get());
+      }
     });
 
     return sub.data.unsubscribe;

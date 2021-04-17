@@ -65,14 +65,16 @@ export default function Todo(props: Props) {
       clearTimeout(inflightComplete.current);
     }
 
-    if (props.todo.complete != !completed) {
-      inflightComplete.current = setTimeout(() => {
-        // delay the actual commit of marking complete
-        TodoModel.markComplete(user, props.todo.id, completed);
-      }, 1000);
-    }
+    setCompleted((currentCompleteState) => {
+      if (props.todo.complete != !currentCompleteState) {
+        inflightComplete.current = setTimeout(() => {
+          // delay the actual commit of marking complete
+          TodoModel.markComplete(user, props.todo.id, currentCompleteState);
+        }, 1000);
+      }
 
-    setCompleted(!props.todo.complete);
+      return !currentCompleteState;
+    });
   }, [user, props.todo.complete, completed]);
 
   const handleKeyDown = useCallback((event: KeyboardEvent<HTMLFormElement>) => {

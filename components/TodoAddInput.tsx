@@ -1,5 +1,13 @@
-import React, { useState, useEffect, useCallback, KeyboardEvent } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  KeyboardEvent,
+  useMemo,
+  useRef,
+} from "react";
 import { useForm } from "react-hook-form";
+import stringToColor from "string-to-color";
 
 import * as Todo from "lib/todo";
 import * as CategoryModel from "lib/category";
@@ -8,6 +16,7 @@ import useCategories from "hooks/useCategories";
 import { Category } from "types/categories";
 import Typeahead from "./Typeahead";
 import TabKey from "vectors/TabKey";
+import useOnClickOutside from "hooks/useOnClickOutside";
 
 interface Props {
   onAddTodo: () => void;
@@ -24,18 +33,31 @@ enum EditingStage {
 }
 
 export function TodoAddInput(props: Props) {
+  const formRef = useRef<HTMLFormElement>();
   const [editingStage, setEditingStage] = useState<EditingStage>(
     EditingStage.Content
   );
   const [user] = useUser();
   const [categories] = useCategories();
+  const categoriesById = useMemo(() => {
+    return categories.reduce((byId, cat) => {
+      byId.set(cat.id, cat);
+
+      return byId;
+    }, new Map<string, Category>());
+  }, [categories]);
   const {
     register,
     handleSubmit,
     getValues,
     setFocus,
     reset,
+    watch,
   } = useForm<FormData>();
+
+  const categoryWatcher = watch("category");
+
+  useOnClickOutside(formRef, props.onAddTodo);
 
   const handleItemCreate = useCallback(
     async (data?: FormData) => {
@@ -54,7 +76,7 @@ export function TodoAddInput(props: Props) {
 
       reset();
       props.onAddTodo();
-      await Todo.create(user, content, categoryId);
+      return Todo.create(user, content, categoryId);
     },
     [getValues, user, categories]
   );
@@ -83,18 +105,56 @@ export function TodoAddInput(props: Props) {
     [categories]
   );
 
+  const getCategory = useCallback(
+    (id: string) => {
+      const isNew = id?.toString().includes("new:");
+
+      if (isNew) {
+        const title = id.toString().split("new:").pop();
+
+        return {
+          color: stringToColor(title),
+          title,
+          id: `new:${title}`,
+          creator_id: user.id,
+          created_at: Date.now(),
+        };
+      }
+
+      return categoriesById.get(id) ?? getDefaultCategory(categories);
+    },
+    [categoriesById, categories, user]
+  );
+
   const categoryInputReg = register("category");
+  const activeCategory = useMemo(() => getCategory(categoryWatcher), [
+    categoryWatcher,
+    getCategory,
+  ]);
 
   return (
     <>
       <form
+        ref={formRef}
         className="todo-input"
         onSubmit={handleSubmit<FormData>(handleItemCreate)}
         onKeyDown={handleKeyPress}
       >
         {editingStage === EditingStage.Content && (
           <div className="todo-input__stage-container">
-            <p className="todo-input__stage-header">Task</p>
+            <p className="todo-input__stage-header">
+              Task{" "}
+              <span
+                className="todo-input__stage-category"
+                style={{ color: activeCategory?.color }}
+              >
+                <span
+                  className="stage-category__dot"
+                  style={{ backgroundColor: activeCategory?.color }}
+                />
+                {activeCategory?.title}
+              </span>
+            </p>
             <input
               autoComplete="off"
               className="todo-input__input"
@@ -109,7 +169,7 @@ export function TodoAddInput(props: Props) {
               elements={categories}
               itemToString={(cat) => cat?.title}
               getItemValue={(cat) => cat?.id}
-              getDefaultValue={getDefaultCategory}
+              getDefaultValue={() => getCategory(getValues().category)}
               makeNewItem={(title, color) =>
                 !nameIsTaken(title) && {
                   id: `new:${title}`,
@@ -174,6 +234,20 @@ export function TodoAddInput(props: Props) {
         .todo-input__input:focus,
         .todo-input__input:active {
           outline: none;
+        }
+
+        .todo-input__stage-category {
+          display: inline-flex;
+          align-items: center;
+          padding: 0 0.25rem;
+          font-weight: normal;
+        }
+
+        .stage-category__dot {
+          height: 0.5rem;
+          width: 0.5rem;
+          border-radius: 50%;
+          margin-right: 0.25rem;
         }
       `}</style>
     </>

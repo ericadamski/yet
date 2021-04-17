@@ -9,11 +9,10 @@ export default function useCategories(): [Category[], boolean] {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const handleInsert = (cat: SupabaseRealtimePayload<Category>) => {
-      setCategories((categories) => [...categories, cat.new]);
-    };
+    const handleInsert = (cat: SupabaseRealtimePayload<Category>) =>
+      setCategories((cats) => [...cats, cat.new]);
 
-    const handleUpdate = (cat: SupabaseRealtimePayload<Category>) => {
+    const handleUpdate = (cat: SupabaseRealtimePayload<Category>) =>
       setCategories((categories) => {
         const copy = [...categories];
 
@@ -29,7 +28,6 @@ export default function useCategories(): [Category[], boolean] {
 
         return copy;
       });
-    };
 
     const sub = Supabase()
       .from<Category>("categories")
@@ -46,7 +44,7 @@ export default function useCategories(): [Category[], boolean] {
       });
 
     return () => {
-      sub.unsubscribe();
+      Supabase().removeSubscription(sub);
     };
   }, []);
 
