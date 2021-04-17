@@ -1,8 +1,10 @@
 import React, { HTMLProps } from "react";
 
-interface Props extends HTMLProps<HTMLButtonElement> {}
+interface Props extends HTMLProps<HTMLButtonElement> {
+  invert?: boolean;
+}
 
-export default function Button(props: Props) {
+export default function Button({ invert, ...props }: Props) {
   return (
     <>
       {/* @ts-ignore */}
@@ -14,7 +16,8 @@ export default function Button(props: Props) {
           border: 1px solid var(--black);
           font-size: 1rem;
           font-weight: 300;
-          background: var(--white);
+          background: var(--${invert ? "black" : "white"});
+          color: var(--${!invert ? "black" : "white"});
           transition: transform 0.1s ease, box-shadow 0.2s ease,
             border-color 0.2s ease;
           will-change: transform, box-shadow, border-color;

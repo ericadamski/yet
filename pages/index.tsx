@@ -4,6 +4,7 @@ import { TodoAddInput } from "components/TodoAddInput";
 import TodoList from "components/TodoList";
 import useUser from "hooks/useUser";
 import Button from "components/Button";
+import * as User from "lib/user";
 
 export default function Home() {
   const [user] = useUser();
@@ -33,7 +34,63 @@ export default function Home() {
   }, []);
 
   if (!isLoggedIn) {
-    return null;
+    return (
+      <>
+        <div className="page">
+          <div className="page__hero">
+            <h1>Yet™️ another TODO app.</h1>
+
+            <Button invert onClick={User.signIn}>
+              <span style={{ display: "flex", alignItems: "center" }}>
+                <img
+                  src="/vectors/github-icon.svg"
+                  style={{ height: "1.5rem", marginRight: "0.5rem" }}
+                />
+                Join now
+              </span>
+            </Button>
+            <Button
+              style={{ borderColor: "transparent", marginTop: "0.5rem" }}
+              onClick={User.signIn}
+            >
+              <span style={{ display: "flex", alignItems: "center" }}>
+                Sign in
+              </span>
+            </Button>
+          </div>
+        </div>
+        <style jsx>{`
+          .button-group {
+            display: flex;
+            flex-direction: column;
+          }
+
+          .page__hero h1 {
+            max-width: 400px;
+            font-size: 3rem;
+            margin-bottom: 4rem;
+          }
+
+          .page__hero {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+          }
+
+          .page {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--pink);
+          }
+        `}</style>
+      </>
+    );
   }
 
   return (
@@ -61,6 +118,7 @@ export default function Home() {
           display: flex;
           flex-direction: column;
           align-items: center;
+          padding: 4rem 0;
         }
 
         .page__add-todos {
@@ -74,30 +132,6 @@ export default function Home() {
           display: flex;
           align-items: center;
           justify-content: center;
-        }
-
-        .key-group {
-          display: inline-flex;
-          align-items: center;
-          justify-content: space-between;
-        }
-
-        .key-group__key {
-          padding: 0.125rem 0.25rem;
-          border: 1px solid var(--black);
-          border-radius: 0.25rem;
-          font-weight: bold;
-          font-size: 0.75rem;
-          margin-left: 0.25rem;
-          margin-right: 0.25rem;
-        }
-
-        .key-group__key:first-child {
-          margin-left: 0;
-        }
-
-        .key-group__key:last-child {
-          margin-right: 0;
         }
 
         .page__add-task-button {
