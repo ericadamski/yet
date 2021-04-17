@@ -18,10 +18,10 @@ export default function Avatar(props: Props) {
     setMenuOpen((isOpen) => !isOpen);
   };
 
-  const firstName = props.user.user_metadata.full_name.split(" ").shift();
-  const initials = props.user.user_metadata.full_name
-    .split(" ")
-    .map((s) => s.charAt(0));
+  const firstName = props.user.user_metadata.full_name?.split(" ").shift();
+  const initials =
+    props.user.user_metadata.full_name?.split(" ").map((s) => s.charAt(0)) ??
+    [];
   const { 0: firstInitial, [initials.length - 1]: lastInitial } = initials;
 
   return (
